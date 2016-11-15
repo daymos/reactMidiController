@@ -8,7 +8,7 @@ import './app.css';
 const _audioServer = 'http://localhost:3002'
 
 function initCell(i,j):cell{
-  return {row: i, col:j, blinking:false, playing:false, loaded:true, sample:'128_C_MelodyWoody_SP_01.wav' } //cell should contain all info regarding a sound sample and its execution
+  return {row: i, col:j, blinking: false, playing: false, loaded: true, sample: '128_C_MelodyWoody_SP_01.wav' } //cell should contain all info regarding a sound sample and its execution
 }
 function grid(x,y):matrix{
   return new Array(x).fill(0).map((_, i)=> new Array(y).fill(0).map((_, j)=> initCell(i, j)))
@@ -17,16 +17,29 @@ function grid(x,y):matrix{
 class App extends Component{
 
   static defaultProps = {
-    cells:grid(10,10),
+    cells:grid(2, 2),
     playing:[]
   }
 
-  reducer(el){
-    if(el.loaded === false){
-      return el;
-    }
-    if(el.loaded === true && el.blinking === false){
+  reducer(i, j){
+
+  let {cells, playing} = this.state;
+
+  let transformations = {
+    playing: ()=> _.flatten(cells).filter((el) => el.playing === true),
+    cells:() => {
+      let gridLens = _.lensPath(['cells']), rowLens = _.lensIndex(i), colLens = _.lensIndex(j),
+      res = cells.slice(0)
+      res[i][j] = cellOverwriter(cells[i][j]) 
+      return res
+
+
+    function cellOverwriter(el){
+    if( el.blinking === false){
       return _.evolve({blinking:()=> true, playing:()=> true}, el)
+    }
+    if( el.blinking === true){
+      return _.evolve({blinking:()=> false, playing:()=> false}, el)
     }
     if (el.playing){
     return _.evolve({playing:()=>false, blinking:()=>true}, el)
@@ -34,26 +47,23 @@ class App extends Component{
     console.log('defaut')
     return el
   }
+  }
 
-}
+    }
+  }
+    return _.evolve(transformations, this.state)
+ }
 
 looper(){
   //play all item into play array every given ammount of time passes
 }
 
 clickBox(i, j){
-  let gridLens = _.lensPath(['cells']), rowLens = _.lensIndex(i), colLens = _.lensIndex(j);
-  this.setState(_.over(_.compose(gridLens, rowLens, colLens), this.reducer ,  this.state), ()=>{
-  //get all value with playing == true into playing array
-   this.setState({playing: _.flatten(this.state.cells).filter((el)=>el.playing === true)}, ()=>{ console.log(this.state) })
-   //replace above line, should use a set
-  })
+  this.setState(this.reducer(i, j),()=>{ console.log('cb: ', this.state) } )
 }
-
 
 constructor(props){
   super(props)
-  console.log(props)
   this.state = { ...props }
 }
 
