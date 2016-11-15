@@ -17,7 +17,7 @@ function grid(x,y):matrix{
 class App extends Component{
 
   static defaultProps = {
-    cells:grid(2,2),
+    cells:grid(10,10),
     playing:[]
   }
 
@@ -45,7 +45,8 @@ clickBox(i, j){
   let gridLens = _.lensPath(['cells']), rowLens = _.lensIndex(i), colLens = _.lensIndex(j);
   this.setState(_.over(_.compose(gridLens, rowLens, colLens), this.reducer ,  this.state), ()=>{
   //get all value with playing == true into playing array
-   this.setState({playing: this.state.playing.concat(_.flatten(this.state.cells).filter((el)=>el.playing === true))}, ()=>console.log(this.state))
+   this.setState({playing: _.flatten(this.state.cells).filter((el)=>el.playing === true)}, ()=>{ console.log(this.state) })
+   //replace above line, should use a set
   })
 }
 
