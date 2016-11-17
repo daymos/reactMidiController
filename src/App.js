@@ -8,68 +8,87 @@ import './app.css';
 const _audioServer = 'http://localhost:3002'
 
 function initCell(i,j):cell{
-  return {row: i, col:j, blinking:false, playing:false, loaded:true, sample:'128_C_MelodyWoody_SP_01.wav' } //cell should contain all info regarding a sound sample and its execution
+  return {row: i, col:j, queing: false, playing: false, loaded: true, sample: '128_C_MelodyWoody_SP_01.wav' } //cell should contain all info regarding a sound sample and its execution
 }
 function grid(x,y):matrix{
-  return new Array(x).fill(0).map((_, i)=> new Array(y).fill(0).map((_, j)=> initCell(i, j)))
+  return new Array(x).fill(0).map((_, i) => new Array(y).fill(0).map((_, j) => initCell(i, j)))
 }
 
 class App extends Component{
 
   static defaultProps = {
-    cells:grid(2,2),
-    playing:[]
+    cells: grid(2, 2),
+    playing: [],
+    queing: [],
+    ctx:  new AudioContext(),
+    start: 0
   }
 
-  reducer(el){
-    if(el.loaded === false){
-      return el;
+  reducer(i, j){
+
+  let {cells, playing, start, ctx} = this.state;
+
+  let transformations = {
+    queing: () => _.flatten(cells).filter((el) => el.queing === true),
+    playing: () => _.flatten(cells).filter((el) => el.playing === true),
+    cells:() => {
+    let gridLens = _.lensPath(['cells']), rowLens = _.lensIndex(i), colLens = _.lensIndex(j),
+      res = cells.slice(0)
+      res[i][j] = cellOverwriter(cells[i][j]) 
+      return res
+
+
+    function cellOverwriter(el){
+    if( el.queing === false){
+      return _.evolve({queing:() => true}, el)
     }
-    if(el.loaded === true && el.blinking === false){
-      return _.evolve({blinking:()=> true, playing:()=> true}, el)
+    if( el.queing  && !el.playing){
+      return _.evolve({queing:() => false}, el)
     }
     if (el.playing){
-    return _.evolve({playing:()=>false, blinking:()=>true}, el)
-  } else {
+      return _.evolve({playing:() => false, queing:() => true}, el)
+    } else {
     console.log('defaut')
     return el
+    }
   }
 
-}
+    },
+    start:() => (start === 0)? ctx.currentTime: start 
+  }
+    return _.evolve(transformations, this.state)
+ }
 
 looper(){
   //play all item into play array every given ammount of time passes
 }
 
 clickBox(i, j){
-  let gridLens = _.lensPath(['cells']), rowLens = _.lensIndex(i), colLens = _.lensIndex(j);
-  this.setState(_.over(_.compose(gridLens, rowLens, colLens), this.reducer ,  this.state), ()=>{
-  //get all value with playing == true into playing array
-   this.setState({playing: this.state.playing.concat(_.flatten(this.state.cells).filter((el)=>el.playing === true))}, ()=>console.log(this.state))
-  })
+  this.setState(this.reducer(i, j),()=>{ console.log('cb: ', this.state) } )
 }
-
 
 constructor(props){
   super(props)
-  console.log(props)
   this.state = { ...props }
 }
 
 render(){
   const {cells} =  this.state
+  this.looper()
+  console.log(this.state.ctx)
   return (
     <div>{
       cells.map((row, i)=>{
         return <div className='row' key={`row${i}`} > {row.map((col,j)=>{
-          let blinking = cells[i][j]['blinking']
+          let queing = cells[i][j]['queing']
           let playing = cells[i][j]['playing']
-          return <div className={`cell ${(blinking)?'blinking':''}`} key={`cell${j}`} onClick={this.clickBox.bind(this, i, j)}  >
-            <audio id={`r${i}c${j}`} loop>
-              <source src={`${_audioServer}/${cells[i][j]['sample']}`} type="audio/ogg" ></source>
-            </audio>
-        </div> })} </div> })
-        }</div>
+          return <div className={`cell ${(playing)?'playing':(queing)?'queing':''}`} key={`cell${j}`} onClick={this.clickBox.bind(this, i, j)}  >
+                    <audio id={`r${i}c${j}`} >
+                      <source src={`${_audioServer}/${cells[i][j]['sample']}`} type="audio/ogg" ></source>
+                    </audio>
+                  </div> })}
+              </div> })
+    }</div>
       )
     }
   }

@@ -15,9 +15,13 @@
 }
 
 
-.cell.blinking{
+.cell.queing{
   background: pink;
   animation:blink 300ms infinite alternate;
+}
+
+.cell.playing{
+  background: green;
 }
 
 @keyframes blink {
