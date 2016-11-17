@@ -6,8 +6,7 @@ import './app.css';
 import init  from './audioContextWrapper.js' 
 //
 //const _audioServer = 'https://soundz-server.herokuapp.com/'
-
-const _audioServer = 'http://localhost:3002'
+const _audioServer = 'http://localhost:3002' 
 
 function initCell(i,j):cell{
   return {row: i, col:j, queing: false, playing: false, loaded: true, sample: '128_C_MelodyWoody_SP_01.wav' } //cell should contain all info regarding a sound sample and its execution
