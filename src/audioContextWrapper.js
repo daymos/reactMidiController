@@ -17,15 +17,15 @@ function init() {
       'http://localhost:3002/128_C_MelodyWoody_SP_01.wav',
     ],
     finishedLoading
-    )
-    console.log(bufferLoader)
-    bufferLoader.load()
-    
+  )
+  console.log(bufferLoader)
+  bufferLoader.load()
+
 }
 
 function finishedLoading(bufferList) {
   console.log('done loading', bufferList)
-  
+
   var source1 = context.createBufferSource();
   var source2 = context.createBufferSource();
   source1.buffer = bufferList[0];
