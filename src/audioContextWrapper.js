@@ -1,3 +1,4 @@
+'use strict'
 import   BufferLoader  from './bufferLoaderClass.js'
 console.log('here', BufferLoader)
 var context;
@@ -6,6 +7,7 @@ var bufferLoader;
 
 function init() {
   // Fix up prefixing
+  console.log('argumetns', arguments)
   console.log('init is runnign')
   window.AudioContext = window.AudioContext || window.webkitAudioContext;
   context = new AudioContext();
@@ -14,26 +16,31 @@ function init() {
     context,
     [
       'http://localhost:3002/128_C_MelodyWoody_SP_01.wav',
+      'http://localhost:3002/128_Bm_BassFluffy_SP_01.wav',
+      'http://localhost:3002/128_C_ArpWaver_SP_01.wav',
       'http://localhost:3002/128_C_MelodyWoody_SP_01.wav',
-    ],
-    finishedLoading
+      'http://localhost:3002/128_D_MelodyAaahFixed_SP_01.wav',
+      'http://localhost:3002/128_DrumsNourished_SP_01.wav',
+      'http://localhost:3002/128_Drums_SP_10.wav',
+      'http://localhost:3002/128_Percloop_SP_02.wav',
+      'http://localhost:3002/140_DrumsCut_SP_01.wav',
+      'http://localhost:3002/85_Drums_SP_01.wav'    ],
+      finishedLoading
   )
-  console.log(bufferLoader)
   bufferLoader.load()
 
 }
 
 function finishedLoading(bufferList) {
-  console.log('done loading', bufferList)
-
-  var source1 = context.createBufferSource();
-  var source2 = context.createBufferSource();
-  source1.buffer = bufferList[0];
-  source2.buffer = bufferList[1];
-
-  source1.connect(context.destination);
-  source2.connect(context.destination);
-  return [source1, source2]
+  window.a = bufferList.map(
+    (el,i) => context.createBufferSource()).map((l, k)=>{
+      l.buffer = bufferList[k]
+      return l
+    })
+  window.a.forEach((source)=>{
+    source.connect(context.destination)
+    console.log('here')
+  })
 }
 
 init()

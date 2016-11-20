@@ -1,0 +1,11 @@
+'http://localhost:3002/128_C_MelodyWoody_SP_01.wav',
+'http://localhost:3002/128_Bm_BassFluffy_SP_01.wav',
+'http://localhost:3002/128_C#_MelodyCute_SP_01.wav',
+'http://localhost:3002/128_C_ArpWaver_SP_01.wav',
+'http://localhost:3002/128_C_MelodyWoody_SP_01.wav',
+'http://localhost:3002/128_D_MelodyAaahFixed_SP_01.wav',
+'http://localhost:3002/128_DrumsNourished_SP_01.wav',
+'http://localhost:3002/128_Drums_SP_10.wav',
+'http://localhost:3002/128_Percloop_SP_02.wav',
+'http://localhost:3002/140_DrumsCut_SP_01.wav',
+'http://localhost:3002/85_Drums_SP_01.wav'
